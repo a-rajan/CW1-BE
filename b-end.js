@@ -15,6 +15,17 @@ app.use(express.json());
 
 // middleware/logger - sends out requests 
 app.use((req, res, next) => {
-  console.log(`${req.method} request for ${req.url}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} request for ${req.url}`);
+  
+  // header request
+  console.log('Request Headers:', req.headers);
+  
+  // post/put requests
+  if (req.body && Object.keys(req.body).length) { // post requests
+    console.log('Request Body:', JSON.stringify(req.body)); // request body
+  } else if (req.method === 'GET' && req.query && Object.keys(req.query).length) { // get requests
+    console.log('Request Query:', JSON.stringify(req.query)); // request query
+  }
+  
   next();
 });
