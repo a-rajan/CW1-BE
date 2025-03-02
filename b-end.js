@@ -166,3 +166,20 @@ app.put('/lessons/:id', async (req, res) => {
     } // lesson update ends here
 });  // put request ends here
 
+// server startup
+async function startserver(){
+    //  mongodb first, then the app.
+    const mongoConnected = await connectToMongoDB();
+    if (!mongoConnected) { // if mongodb is not connected
+        console.error("MongoDB connection failed. Server will not start.");
+        return; 
+    }
+    // express startup
+    app.listen(port, () => {
+        console.log(`Server started on http://localhost:${port}`);
+    }); 
+
+// starting 
+startserver().catch(console.error "there is a problem starting up the server", error ); // error checking +message
+
+}
