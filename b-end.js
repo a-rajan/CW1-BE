@@ -10,22 +10,27 @@ const app = express();
 const port = process.env.PORT || 3000; // redner.com + local port
 
 // middleware work below
-app.use(cors()); 
-app.use(express.json()); 
+app.use(cors());
+app.use(express.json());
 
 // middleware/logger - sends out requests 
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} request for ${req.url}`);
-  
-  // header request
-  console.log('Request Headers:', req.headers);
-  
-  // post/put requests
-  if (req.body && Object.keys(req.body).length) { // post requests
-    console.log('Request Body:', JSON.stringify(req.body)); // request body
-  } else if (req.method === 'GET' && req.query && Object.keys(req.query).length) { // get requests
-    console.log('Request Query:', JSON.stringify(req.query)); // request query
-  }
-  
-  next();
+    console.log(`[${new Date().toISOString()}] ${req.method} request for ${req.url}`);
+
+    // header request
+    console.log('Request Headers:', req.headers);
+
+    // post/put requests
+    if (req.body && Object.keys(req.body).length) { // post requests
+        console.log('Request Body:', JSON.stringify(req.body)); // request body
+    } else if (req.method === 'GET' && req.query && Object.keys(req.query).length) { // get requests
+        console.log('Request Query:', JSON.stringify(req.query)); // request query
+    }
+
+    next();
 });
+//backend images / static file related etc.
+app.use('/images', express.static(path.join(__dirname, 'images'))); // directing to imgs folder
+app.use('/images', (req, res) => { res.status(404).send('Not found'); // image hasnt loaded
+}
+//mongodb related code below
