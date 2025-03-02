@@ -82,8 +82,27 @@ app.get('/lessons', async (req, res) => { // GET request for /lessons endpoint
     try {
         const allLessons = await lessons.find({}).toArray(); // get all lessons from MongoDB
         res.json(allLessons); // send lessons as JSON response
-    } catch (error) { // fail check
-        console.error("Error fetching lessons:", error); // 
-        res.status(500).json({ message: 'Error getting lessons' }); 
+    } catch (error) {
+        console.error("Error fetching lessons:", error); // log error
+        res.status(500).json({ message: 'Error getting lessons' }); // send error response
     }
-}); // lesson GET request ends here
+});
+
+// GET request for search functionality
+app.get('/search', async (req, res) => { // 
+    try { // search attempts + error checking
+        const query = req.query.q || ''; // "what does the user want to search for?" / related query
+        // search methods below
+        const searchQuery = { // searching in progress
+            $or: [ // search filters
+                { subject: { $regex: query, $options: 'i' } },
+                { location: { $regex: query, $options: 'i' } } // ensuring the search isn't case sensitive
+            ]
+        };
+        const searchResults = await lessons.find(searchQuery).toArray(); // begin search
+        res.json(searchResults); // send results as JSON
+    } catch (error) {
+        console.error("Search error:", error); 
+        res.status(500).json({ message: 'Search failed' }); // send error response
+    }
+}); // search ends here
