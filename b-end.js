@@ -102,7 +102,67 @@ app.get('/search', async (req, res) => { //
         const searchResults = await lessons.find(searchQuery).toArray(); // begin search
         res.json(searchResults); // send results as JSON
     } catch (error) {
-        console.error("Search error:", error); 
+        console.error("Search error:", error);
         res.status(500).json({ message: 'Search failed' }); // send error response
     }
 }); // search ends here
+
+// orders/cart/checkout route(?)
+app.post('/orders', async (req, res) => { // POST request for /orders 
+    try { // will receive order data 
+        const { name, phone, cart } = req.body; // order data
+        // order metadata error check
+        if (!name || !phone || !cart || !Array.isArray(cart)) {
+            return res.status(400).json({ message: 'order data not valid' });
+        }
+
+
+        const order = { // order/cart data
+            name, // customer name
+            phone, // customer phone
+            lessonIDs: cart.map(item => item.id), // lesson ids from cart
+            quantities: cart.map(item => item.quantity), // lesson quantity in card
+            orderDate: new Date() // order date
+        };
+
+        const result = await users.insertOne(order); // order data will be insreted into the db
+        res.status(201).json({ // no problems with the order/order successful
+            message: 'order created',
+            orderId: result.insertedId // reset basket/back to the beginning
+        }); 
+        // order submission error checking below
+    } catch (error) {
+        console.error("order creation error:", error);
+        res.status(500).json({ message: 'order creation failed' }); //  this message will be shown to user if order fails (do not confues with console.error)
+    }
+}); // order ends here
+
+// put request for updated lessons stock etc.
+app.put('/lessons/:id', async (req, res) => { 
+    try { // lesson update attempts + error checking
+        const lessonId = req.params.id;
+        const updates = req.body;
+
+        if (!ObjectId.isValid(lessonId)) { // lesson id error check
+            return res.status(400).json({ message: 'invalid lesson id format' }); 
+        }
+
+        // lesson metadata management
+        const result = await lessons.updateOne(
+            { _id: new ObjectId(lessonId) }, // get lesson data via lesson id
+            { $set: updates } // sending lesson updates
+        );
+
+        // error checking if lesson is found/matches info in the database
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'lesson not found in database' });
+        }
+
+        // lesson update/done success message
+        res.json({ message: 'lesson updated successfully' });
+    } catch (error) { // this line + below line -> problem with updating
+        console.error("lesson update error:", error);
+        res.status(500).json({ message: 'update failed' });
+    } // lesson update ends here
+});  // put request ends here
+
