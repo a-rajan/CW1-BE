@@ -31,6 +31,8 @@ app.use((req, res, next) => {
 });
 //backend images / static file related etc.
 app.use('/images', express.static(path.join(__dirname, 'images'))); // directing to imgs folder
-app.use('/images', (req, res) => { res.status(404).send('Not found'); // image hasnt loaded
-}
+app.use('/images', (req, res) => {
+    res.status(404).send('Not found'); // image hasnt loaded
+});
 //mongodb related code below
+const uri = "mongodb+srv://abi:arpw1@ehelp.ybon4.mongodb.net/ehelp?retryWrites=true&w=majority"; // mongodb connection string + ensuring the database is connected
