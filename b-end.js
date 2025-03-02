@@ -56,7 +56,7 @@ async function connectToMongoDB() { // async function to connect to the mongodb
         // this will create lesson metadata if you are setting up for the first time
         const count = await lessons.countDocuments(); // counting the number of documents in the lessons collection
         if (count === 0) { // refer to the comment above const count = await
-            await lessons.insertMany([
+            await lessons.insertMany([ // inserting lesson metadata
                 { subject: 'English', location: 'room G04', price: 10, spaces: 5, image: '../images/english.svg' },
                 { subject: 'Math', location: 'room G05', price: 10, spaces: 5, image: '../images/maths.svg' },
                 { subject: 'Science', location: 'room G09', price: 15, spaces: 3, image: '../images/science.svg' },
@@ -76,4 +76,15 @@ async function connectToMongoDB() { // async function to connect to the mongodb
         console.error("MongoDB connection error:", error);
         return false; 
     }
+} // mongodb connection ends here 
+// api routes/coding below
+app.get('/lessons', async (req, res) => { // get request for lessons
+    const result = await lessons.find({}).toArray(); // finding all lessons
+    res.json(result); // response in json format
+}); // get request ends here
+app.get('search', async (req, res) => { // get request for search
+    const { subject } = req.query; // query for subject
+    const result = await lessons.find({ subject }).toArray(); // finding lessons based on subject
+    res.json(result); // response in json format
 }
+);
