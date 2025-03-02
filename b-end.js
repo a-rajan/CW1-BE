@@ -42,3 +42,38 @@ let db; // database
 let lessons; // collection
 let users; // collection
 
+// connecting to the mongodb
+async function connectToMongoDB() { // async function to connect to the mongodb
+    try { // this will attempt to connect to mongodb 
+        client = new MongoClient(mongouri); // client connection
+        await client.connect(); 
+        console.log("Connected to MongoDB Atlas"); // confirmation that mongodb is connected
+
+        db = client.db('ehelp'); // database name
+        lessons = db.collection('lessons'); // collection name (database -->collections --> [lesson name])
+        users = db.collection('orders'); // Changed to 'orders' for clarity
+
+        // this will create lesson metadata if you are setting up for the first time
+        const count = await lessons.countDocuments(); // counting the number of documents in the lessons collection
+        if (count === 0) { // refer to the comment above const count = await
+            await lessons.insertMany([
+                { subject: 'English', location: 'room G04', price: 10, spaces: 5, image: '../images/english.svg' },
+                { subject: 'Math', location: 'room G05', price: 10, spaces: 5, image: '../images/maths.svg' },
+                { subject: 'Science', location: 'room G09', price: 15, spaces: 3, image: '../images/science.svg' },
+                { subject: 'IT', location: 'room G08', price: 20, spaces: 8, image: '../images/it.svg' },
+                { subject: 'History', location: 'room G10', price: 15, spaces: 8, image: '../images/history.svg' },
+                { subject: 'Geography', location: 'room G11', price: 12, spaces: 6, image: '../images/geography.svg' },
+                { subject: 'Art', location: 'room G12', price: 18, spaces: 4, image: '../images/art.svg' },
+                { subject: 'Chinese', location: 'room G13', price: 10, spaces: 10, image: '../images/chinese.svg' },
+                { subject: 'Music', location: 'room G14', price: 20, spaces: 5, image: '../images/music.svg' },
+                { subject: 'Law', location: 'room G15', price: 15, spaces: 7, image: '../images/law.svg' }
+            ]); // lesson content that has been inserted 
+            console.log("Lessons collection initialized"); // confirmation message that lesson info is setuip
+        }
+
+        return true; // connection to mongodb is successful
+    } catch (error) { // if connection to mongodb is not successful
+        console.error("MongoDB connection error:", error);
+        return false; 
+    }
+}
