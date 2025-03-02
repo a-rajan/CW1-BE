@@ -35,4 +35,10 @@ app.use('/images', (req, res) => {
     res.status(404).send('Not found'); // image hasnt loaded
 });
 //mongodb related code below
-const uri = "mongodb+srv://abi:arpw1@ehelp.ybon4.mongodb.net/ehelp?retryWrites=true&w=majority"; // mongodb connection string + ensuring the database is connected
+const mongouri = "mongodb+srv://abi:arpw1@ehelp.ybon4.mongodb.net/ehelp?retryWrites=true&w=majority"; // mongodb connection string + ensuring the database is connected
+
+let client; // mongodb  client 
+let db; // database
+let lessons; // collection
+let users; // collection
+
