@@ -46,7 +46,7 @@ let users; // collection
 async function connectToMongoDB() { // async function to connect to the mongodb
     try { // this will attempt to connect to mongodb 
         client = new MongoClient(mongouri); // client connection
-        await client.connect(); 
+        await client.connect();
         console.log("Connected to MongoDB Atlas"); // confirmation that mongodb is connected
 
         db = client.db('ehelp'); // database name
@@ -74,17 +74,16 @@ async function connectToMongoDB() { // async function to connect to the mongodb
         return true; // connection to mongodb is successful
     } catch (error) { // if connection to mongodb is not successful
         console.error("MongoDB connection error:", error);
-        return false; 
+        return false;
     }
 } // mongodb connection ends here 
 // api routes/coding below
-app.get('/lessons', async (req, res) => { // get request for lessons
-    const result = await lessons.find({}).toArray(); // finding all lessons
-    res.json(result); // response in json format
-}); // get request ends here
-app.get('search', async (req, res) => { // get request for search
-    const { subject } = req.query; // query for subject
-    const result = await lessons.find({ subject }).toArray(); // finding lessons based on subject
-    res.json(result); // response in json format
-}
-);
+app.get('/lessons', async (req, res) => { // GET request for /lessons endpoint
+    try {
+        const allLessons = await lessons.find({}).toArray(); // get all lessons from MongoDB
+        res.json(allLessons); // send lessons as JSON response
+    } catch (error) { // fail check
+        console.error("Error fetching lessons:", error); // 
+        res.status(500).json({ message: 'Error getting lessons' }); 
+    }
+}); // lesson GET request ends here
