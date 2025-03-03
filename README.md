@@ -1,5 +1,6 @@
 # CW1-BE
  Backend 
-connecting to front end
-ensuring everything is ticked off
-remembering about nodemodules
+
+https://github.com/a-rajan
+https://github.com/a-rajan/CW1-FE
+https://github.com/a-rajan/CW1-BE
