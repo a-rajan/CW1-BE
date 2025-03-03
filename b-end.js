@@ -51,22 +51,22 @@ async function connectToMongoDB() { // async function to connect to the mongodb
 
         db = client.db('ehelp'); // database name
         lessons = db.collection('lessons'); // collection name (database -->collections --> [lesson name])
-        users = db.collection('orders'); // Changed to 'orders' for clarity
+        users = db.collection('orders'); // changed to 'orders' , in attempt to avoid future confusion 
 
         // this will create lesson metadata if you are setting up for the first time
         const count = await lessons.countDocuments(); // counting the number of documents in the lessons collection
         if (count === 0) { // refer to the comment above const count = await
             await lessons.insertMany([ // inserting lesson metadata
-                { subject: 'English', location: 'room G04', price: 10, spaces: 5, image: '../images/english.svg' },
-                { subject: 'Math', location: 'room G05', price: 10, spaces: 5, image: '../images/maths.svg' },
-                { subject: 'Science', location: 'room G09', price: 15, spaces: 3, image: '../images/science.svg' },
-                { subject: 'IT', location: 'room G08', price: 20, spaces: 8, image: '../images/it.svg' },
-                { subject: 'History', location: 'room G10', price: 15, spaces: 8, image: '../images/history.svg' },
-                { subject: 'Geography', location: 'room G11', price: 12, spaces: 6, image: '../images/geography.svg' },
-                { subject: 'Art', location: 'room G12', price: 18, spaces: 4, image: '../images/art.svg' },
-                { subject: 'Chinese', location: 'room G13', price: 10, spaces: 10, image: '../images/chinese.svg' },
-                { subject: 'Music', location: 'room G14', price: 20, spaces: 5, image: '../images/music.svg' },
-                { subject: 'Law', location: 'room G15', price: 15, spaces: 7, image: '../images/law.svg' }
+                { subject: 'English', location: 'room G04', price: 10, spaces: 5, image: '/images/english.svg' },
+                { subject: 'Math', location: 'room G05', price: 10, spaces: 5, image: '/images/maths.svg' },
+                { subject: 'Science', location: 'room G09', price: 15, spaces: 3, image: '/images/science.svg' },
+                { subject: 'IT', location: 'room G08', price: 20, spaces: 8, image: '/images/it.svg' },
+                { subject: 'History', location: 'room G10', price: 15, spaces: 8, image: '/images/history.svg' },
+                { subject: 'Geography', location: 'room G11', price: 12, spaces: 6, image: '/images/geography.svg' },
+                { subject: 'Art', location: 'room G12', price: 18, spaces: 4, image: '/images/art.svg' },
+                { subject: 'Chinese', location: 'room G13', price: 10, spaces: 10, image: '/images/chinese.svg' },
+                { subject: 'Music', location: 'room G14', price: 20, spaces: 5, image: '/images/music.svg' },
+                { subject: 'Law', location: 'room G15', price: 15, spaces: 7, image: '/images/law.svg' }
             ]); // lesson content that has been inserted 
             console.log("Lessons collection initialized"); // confirmation message that lesson info is setuip
         }
@@ -129,7 +129,7 @@ app.post('/orders', async (req, res) => { // POST request for /orders
         res.status(201).json({ // no problems with the order/order successful
             message: 'order created',
             orderId: result.insertedId // reset basket/back to the beginning
-        }); 
+        });
         // order submission error checking below
     } catch (error) {
         console.error("order creation error:", error);
@@ -138,13 +138,13 @@ app.post('/orders', async (req, res) => { // POST request for /orders
 }); // order ends here
 
 // put request for updated lessons stock etc.
-app.put('/lessons/:id', async (req, res) => { 
+app.put('/lessons/:id', async (req, res) => {
     try { // lesson update attempts + error checking
         const lessonId = req.params.id;
         const updates = req.body;
 
         if (!ObjectId.isValid(lessonId)) { // lesson id error check
-            return res.status(400).json({ message: 'invalid lesson id format' }); 
+            return res.status(400).json({ message: 'invalid lesson id format' });
         }
 
         // lesson metadata management
@@ -167,19 +167,21 @@ app.put('/lessons/:id', async (req, res) => {
 });  // put request ends here
 
 // server startup
-async function startserver(){
+async function startServer() { // 
     //  mongodb first, then the app.
     const mongoConnected = await connectToMongoDB();
     if (!mongoConnected) { // if mongodb is not connected
         console.error("MongoDB connection failed. Server will not start.");
-        return; 
+        process.exit(1); // exit if connection failed
+        return;
     }
     // express startup
     app.listen(port, () => {
         console.log(`Server started on http://localhost:${port}`);
-    }); 
-
-// starting 
-startserver().catch(console.error "there is a problem starting up the server", error ); // error checking +message
-
+    });
 }
+
+// starting the server
+startServer().catch(error => { // 
+    console.error("there is a problem starting up the server", error); // error checking +message
+});
